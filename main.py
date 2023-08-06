@@ -1,5 +1,3 @@
-
-
 class Character:
     def __init__(self, name, health, power):
         self.name = name
@@ -12,6 +10,7 @@ class Character:
 
     def is_alive(self):
         return self.health > 0
+
 
 class Player(Character):
     def decision(self, enemy):
@@ -26,13 +25,19 @@ class Player(Character):
             return False
         return True
 
+
 class Enemy(Character):
     pass
+
 
 def game():
     player = Player("Hero", 50, 10)
     enemy = Enemy("Enemy", 50, 5)
 
+    process_game(player, enemy)
+
+
+def process_game(player, enemy):
     while player.is_alive() and enemy.is_alive():
         print(f"{player.name} HP: {player.health}, {enemy.name} HP: {enemy.health}")
         if not player.decision(enemy):
@@ -40,40 +45,28 @@ def game():
         if enemy.is_alive():
             enemy.attack(player)
 
-game()
 
-def test_hero_defeat_enemy():
+if __name__ == '__main__':
+    game()
 
-    #given
 
+def test_hero_defeat_enemy(monkeypatch, capsys):
+    # given
     player = Player('test_hero', 20, 10)
     enemy = Enemy('test_enemy', 15, 5)
 
+    # when
+    inputs = iter(['a', 'a'])
+    monkeypatch.setattr('builtins.input', lambda _: next(inputs))
+    process_game(player, enemy)
 
-
-    #when
-
-    # Запускаем игру
-    game()
-    print('A')
-
-    #then
-
-    # output 'A'
-    # check stdout
-    assert 'test_hero attacks test_enemy!'
-
-    # output 'A'
-    # check stdout
-
-
-
-
-
-
-
-
-
-
+    # then
+    captured = capsys.readouterr().out
+    expected = 'test_hero HP: 20, test_enemy HP: 15\n' \
+               'test_hero attacks test_enemy!\n' \
+               'test_enemy attacks test_hero!\n' \
+               'test_hero HP: 15, test_enemy HP: 5\n' \
+               'test_hero attacks test_enemy!\n'
+    assert captured == expected
 
 
