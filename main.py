@@ -70,3 +70,67 @@ def test_hero_defeat_enemy(monkeypatch, capsys):
     assert captured == expected
 
 
+def test_enemy_defeat_hero(monkeypatch, capsys):
+    # given
+    player = Player('test_hero', 10, 10)
+    enemy = Enemy('test_enemy', 30, 5)
+
+    # when
+    inputs = iter(['a', 'a'])
+    monkeypatch.setattr('builtins.input', lambda _: next(inputs))
+    process_game(player, enemy)
+
+    # then
+    captured = capsys.readouterr().out
+    expected = 'test_hero HP: 10, test_enemy HP: 30\n' \
+               'test_hero attacks test_enemy!\n' \
+               'test_enemy attacks test_hero!\n' \
+               'test_hero HP: 5, test_enemy HP: 20\n' \
+               'test_hero attacks test_enemy!\n' \
+               'test_enemy attacks test_hero!\n'
+
+    assert captured == expected
+
+
+def test_hero_run_after_attack(monkeypatch, capsys):
+    # given
+    player = Player('test_hero', 50, 10)
+    enemy = Enemy('test_enemy', 50, 5)
+
+    # when
+    inputs = iter(['a', 'r'])
+    monkeypatch.setattr('builtins.input', lambda _: next(inputs))
+    process_game(player, enemy)
+
+    # then
+    captured = capsys.readouterr().out
+    expected = 'test_hero HP: 50, test_enemy HP: 50\n' \
+               'test_hero attacks test_enemy!\n' \
+               'test_enemy attacks test_hero!\n' \
+               'test_hero HP: 45, test_enemy HP: 40\n' \
+               'test_hero runs away...\n'
+
+    assert captured == expected
+
+def test_hero_heal_and_defeat_enemy(monkeypatch, capsys):
+    # given
+    player = Player('test_hero', 10, 10)
+    enemy = Enemy('test_enemy', 15, 5)
+
+    # when
+    inputs = iter(['a', 'h', 'a'])
+    monkeypatch.setattr('builtins.input', lambda _: next(inputs))
+    process_game(player, enemy)
+
+    # then
+    captured = capsys.readouterr().out
+    expected = 'test_hero HP: 10, test_enemy HP: 15\n' \
+               'test_hero attacks test_enemy!\n' \
+               'test_enemy attacks test_hero!\n' \
+               'test_hero HP: 5, test_enemy HP: 5\n' \
+               'test_hero heals!\n' \
+               'test_enemy attacks test_hero!\n' \
+               'test_hero HP: 10, test_enemy HP: 5\n' \
+               'test_hero attacks test_enemy!\n'
+
+    assert captured == expected
