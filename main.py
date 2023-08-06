@@ -112,6 +112,7 @@ def test_hero_run_after_attack(monkeypatch, capsys):
 
     assert captured == expected
 
+
 def test_hero_heal_and_defeat_enemy(monkeypatch, capsys):
     # given
     player = Player('test_hero', 10, 10)
